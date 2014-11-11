@@ -1,0 +1,6 @@
+input {
+  file {
+    path => "{{ mysql_log_dir }}/*.log"
+    type => "mysql"
+  }
+}

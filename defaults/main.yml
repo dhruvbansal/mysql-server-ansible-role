@@ -1,0 +1,31 @@
+---
+
+mysql_user:  mysql
+mysql_group: mysql
+
+mysql_home_dir: /var/run/mysqld
+mysql_data_dir: /var/lib/mysql
+mysql_log_dir:  /var/log/mysql
+mysql_tmp_dir:  /tmp
+
+mysql_root_password: SET_ME_PLEASE
+
+mysql_bind_address: 127.0.0.1
+
+mysql_key_buffer: 16M
+mysql_query_cache_limit: 1M
+mysql_query_cache_size: 16M
+mysql_general_log: 0
+mysql_long_query_time: 2
+mysql_log_queries_not_using_indexes: 0
+mysql_bulk_insert_buffer_size: 8M
+
+# mysql_ssl_ca:          /etc/mysql/cacert.pem
+# mysql_ssl_certificate: /etc/mysql/server-cert.pem
+# mysql_ssl_key:         /etc/mysql/server-key.pem
+
+mysql_users: {}
+mysql_privs: {}
+
+mysql_server_use_logstash: true
+logstash_conf_dir: /etc/logstash/conf.d/

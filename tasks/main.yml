@@ -1,0 +1,52 @@
+---
+
+- name: Install package
+  apt: name=mysql-server state=present
+  register: new_mysql_server_installation
+  tags:
+    - mysql
+    
+- name: Set root password
+  command: "mysqladmin -u root password {{mysql_root_password}}"
+  when: new_mysql_server_installation.changed
+  tags:
+    - mysql
+    - users
+
+- name: Install Python client library
+  apt: name=python-mysqldb state=present
+  tags:
+    - mysql
+
+- name: Create data directory
+  file: state=directory path={{ mysql_data_dir }} owner={{ mysql_user }} group={{ mysql_group }} mode=0700
+  tags:
+    - mysql
+    
+- name: Allow access to data directory through AppArmor
+  template: src=app_armor.j2 dest=/etc/apparmor.d/local/usr.sbin.mysqld owner={{ mysql_user }} group={{ mysql_group }} mode=0644
+  tags:
+    - mysql
+
+- name: Create configuration file
+  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf owner=root group=root mode=0644
+  notify:
+    - restart mysql
+  tags:
+    - mysql
+
+- name: Create users
+  mysql_user: login_user=root login_password={{ mysql_root_password }} name={{ item.value.name }} password={{ item.value.password }} state=present
+  with_dict: mysql_users
+  tags:
+    - mysql
+    - users
+
+- name: Create privileges
+  mysql_user: login_user=root login_password={{ mysql_root_password }} name={{ item.value.name }} priv={{ item.value.priv }}
+  with_dict: mysql_privs
+  tags:
+    - mysql
+    - users
+
+- include: logstash.yml
